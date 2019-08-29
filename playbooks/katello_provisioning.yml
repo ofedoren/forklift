@@ -3,6 +3,19 @@
   vars:
     libvirt_tftp: true
   roles:
-    - katello
+    - role: foreman_server_repositories
+      foreman_server_repositories_ostree: true
+      foreman_server_repositories_katello: true
+      foreman_server_repositories_foreman_client: true
+    - ruby_scl
+    - ruby_libvirt_gem
     - libvirt
-    - katello_provisioning
+    - katello_devel
+    - etc_hosts
+    - git
+    - role: hammer_devel_extra
+      become: no
+    - role: utils
+      become: no
+    - role: katello_provisioning
+      become: no

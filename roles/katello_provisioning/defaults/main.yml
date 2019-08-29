@@ -7,3 +7,4 @@ katello_provisioning_sync_repos: True
 katello_provisioning_download_policy: on_demand
 katello_provisioning_disable_system_checks: True
 katello_provisioning_installer_options: []
+foreman_repositories_version: nightly
