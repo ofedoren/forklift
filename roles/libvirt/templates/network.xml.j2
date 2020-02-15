@@ -4,6 +4,9 @@
  <bridge name='virbr1' stp='on' delay='0' />
  <domain name="{{ ansible_domain }}" localOnly='yes'/>
  <dns>
+   <host ip='{{ libvirt_setup_ip_address }}'>
+     <hostname>{{ hostname }}</hostname>
+   </host>
  </dns>
  <ip address='{{ libvirt_setup_ip_address }}' netmask='255.255.255.0'>
    <tftp root='/var/lib/tftpboot' />

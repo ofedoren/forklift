@@ -69,6 +69,54 @@
     creates: ~/.hammer/cli.modules.d/foreman_remote_execution.yml
   when: ('theforeman/hammer_cli_foreman_remote_execution' in hammer_devel_repositories)
 
+- name: 'Configure hammer_cli_foreman_tasks'
+  command: cp ~/hammer-cli-foreman-tasks/config/foreman_tasks.yml ~/.hammer/cli.modules.d/
+  args:
+    creates: ~/.hammer/cli.modules.d/foreman_tasks.yml
+  when: ('theforeman/hammer-cli-foreman-tasks' in hammer_devel_repositories)
+
+- name: 'Configure hammer_cli_foreman_ansible'
+  command: cp ~/hammer-cli-foreman-ansible/config/foreman_ansible.yml ~/.hammer/cli.modules.d/
+  args:
+    creates: ~/.hammer/cli.modules.d/foreman_ansible.yml
+  when: ('theforeman/hammer-cli-foreman-ansible' in hammer_devel_repositories)
+
+- name: 'Configure hammer_cli_foreman_templates'
+  command: cp ~/hammer-cli-foreman-templates/config/foreman_templates.yml ~/.hammer/cli.modules.d/
+  args:
+    creates: ~/.hammer/cli.modules.d/foreman_templates.yml
+  when: ('theforeman/hammer-cli-foreman-templates' in hammer_devel_repositories)
+
+- name: 'Configure hammer_cli_foreman_discovery'
+  command: cp ~/hammer-cli-foreman-discovery/config/foreman_discovery.yml ~/.hammer/cli.modules.d/
+  args:
+    creates: ~/.hammer/cli.modules.d/foreman_discovery.yml
+  when: ('theforeman/hammer-cli-foreman-discovery' in hammer_devel_repositories)
+
+- name: 'Configure hammer_cli_foreman_virt_who_configure'
+  command: cp ~/hammer-cli-foreman-virt-who-configure/config/foreman_virt_who_configure.yml ~/.hammer/cli.modules.d/
+  args:
+    creates: ~/.hammer/cli.modules.d/foreman_virt_who_configure.yml
+  when: ('theforeman/hammer-cli-foreman-virt-who-configure' in hammer_devel_repositories)
+
+- name: 'Configure hammer_cli_foreman_azure_rm'
+  command: cp ~/hammer_cli_foreman_azure_rm/config/foreman_azure_rm.yml ~/.hammer/cli.modules.d/
+  args:
+    creates: ~/.hammer/cli.modules.d/foreman_azure_rm.yml
+  when: ('theforeman/hammer_cli_foreman_azure_rm' in hammer_devel_repositories)
+
+- name: 'Configure hammer_cli_foreman_openscap'
+  command: cp ~/hammer_cli_foreman_openscap/config/foreman_openscap.yml ~/.hammer/cli.modules.d/
+  args:
+    creates: ~/.hammer/cli.modules.d/foreman_openscap.yml
+  when: ('theforeman/hammer_cli_foreman_openscap' in hammer_devel_repositories)
+
+- name: 'Configure hammer_cli_foreman_bootdisk'
+  command: cp ~/hammer_cli_foreman_bootdisk/config/foreman_bootdisk.yml ~/.hammer/cli.modules.d/
+  args:
+    creates: ~/.hammer/cli.modules.d/foreman_bootdisk.yml
+  when: ('theforeman/hammer_cli_foreman_bootdisk' in hammer_devel_repositories)
+
 - name: 'Alias hammer'
   lineinfile: dest=~/.bash_profile line="alias hammer='BUNDLE_GEMFILE=~/hammer-cli-foreman/Gemfile bundle exec hammer'"
 

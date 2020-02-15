@@ -13,13 +13,27 @@ hammer_devel_repositories:
   - theforeman/hammer-cli-foreman
   - theforeman/hammer-cli-foreman-admin
   - theforeman/hammer-cli-foreman-tasks
+  - theforeman/hammer-cli-foreman-ansible
+  - theforeman/hammer-cli-foreman-templates
+  - theforeman/hammer-cli-foreman-discovery
+  - theforeman/hammer-cli-foreman-virt-who-configure
   - theforeman/hammer_cli_foreman_remote_execution
+  - theforeman/hammer_cli_foreman_azure_rm
+  - theforeman/hammer_cli_foreman_openscap
+  - theforeman/hammer_cli_foreman_bootdisk
   - katello/hammer-cli-csv
   - katello/hammer-cli-katello
 hammer_devel_local_gems: |-
-  gem 'hammer_cli'
+  gem 'hammer_cli_foreman'
     gem 'hammer_cli_katello'
     gem 'hammer_cli_foreman_admin'
     gem 'hammer_cli_foreman_tasks'
+    gem 'hammer_cli_foreman_ansible'
+    gem 'hammer_cli_foreman_templates'
+    gem 'hammer_cli_foreman_discovery'
+    gem 'hammer_cli_foreman_virt_who_configure'
+    gem 'hammer_cli_foreman_azure_rm'
+    gem 'hammer_cli_foreman_bootdisk'
     gem 'hammer_cli_foreman_remote_execution'
+    gem 'hammer_cli_foreman_openscap'
     gem 'hammer_cli_csv'

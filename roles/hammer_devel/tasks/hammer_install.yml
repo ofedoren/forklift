@@ -38,10 +38,11 @@
 
 - name: 'Add local gems to Gemfile.local'
   blockinfile:
-    dest: ~/hammer-cli-foreman/Gemfile.local
+    dest: ~/hammer-cli/Gemfile.local
     create: yes
     block: |
       gem 'pry'
+      gem 'pry-byebug'
       path '../' do
         {{ hammer_devel_local_gems }}
       end
@@ -51,4 +52,4 @@
   yum: name=gcc-c++ state=present
 
 - name: 'Install gems'
-  bundler: chdir=~/hammer-cli-foreman state=present
+  bundler: chdir=~/hammer-cli state=present

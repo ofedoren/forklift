@@ -14,9 +14,9 @@
   set_fact:
     foreman_provisioning_smart_proxy: "{{ foreman_provisioning_smart_proxy_json.stdout|from_json }}"
 
-- name: 'refresh features'
-  shell: >
-    {{ foreman_provisioning_hammer }} proxy refresh-features --id {{ foreman_provisioning_smart_proxy.Id }}
+# - name: 'refresh features'
+#   shell: >
+#     {{ foreman_provisioning_hammer }} proxy refresh-features --id {{ foreman_provisioning_smart_proxy.Id }}
 
 - name: 'prepare hammer taxonomy options'
   set_fact:

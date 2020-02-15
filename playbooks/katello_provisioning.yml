@@ -13,7 +13,7 @@
     - katello_devel
     - etc_hosts
     - git
-    - role: hammer_devel_extra
+    - role: hammer_devel
       become: no
     - role: utils
       become: no
