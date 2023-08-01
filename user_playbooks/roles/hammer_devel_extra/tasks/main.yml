@@ -1,0 +1,39 @@
+---
+- include_tasks: hammer_config.yml
+
+- name: Install gems for hammer-cli-katello
+  become: true
+  command: >
+    bundle install
+  args:
+    chdir: /home/vagrant/hammer-cli-katello
+  when: hammer_devel_local_gems.find('hammer_cli_katello') != -1
+
+- name: Generate mo files for hammer-cli-katello
+  command: >
+    make -C locale all-mo
+  args:
+    chdir: /home/vagrant/hammer-cli-katello
+  when: hammer_devel_local_gems.find('hammer_cli_katello') != -1
+
+- name: Install gems for hammer-cli-foreman-virt-who-configure
+  become: true
+  command: >
+    bundle install
+  args:
+    chdir: /home/vagrant/hammer-cli-foreman-virt-who-configure
+  when: hammer_devel_local_gems.find('hammer_cli_foreman_virt_who_configure') != -1
+
+- name: Generate mo files for hammer-cli-foreman-virt-who-configure
+  command: >
+    make -C locale all-mo
+  args:
+    chdir: /home/vagrant/hammer-cli-foreman-virt-who-configure
+  when: hammer_devel_local_gems.find('hammer_cli_foreman_virt_who_configure') != -1
+
+- name: Generate mo files for foreman_virt_who_configure
+  command: >
+    make -C locale all-mo
+  args:
+    chdir: /home/vagrant/foreman_virt_who_configure
+  when: hammer_devel_local_gems.find('foreman_virt_who_configure') != -1

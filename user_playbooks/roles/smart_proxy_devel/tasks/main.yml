@@ -1,0 +1,121 @@
+---
+- name: 'Install Ansible'
+  become: true
+  yum:
+    name: ansible
+    state: present
+
+- name: 'Install ansible roles'
+  ignore_errors: true
+  become: true
+  shell: >
+    ansible-galaxy install {{ item }} -p /etc/ansible/roles
+  with_items: '{{ foreman_ansible_roles }}'
+
+# Smart proxy local clones
+
+- name: 'Clone the smart-proxy repositories'
+  git:
+    repo: https://github.com/{{ item }}.git
+    dest: ~/{{ item.split('/')[1] }}
+    remote: upstream
+  with_items: "{{ smart_proxy_devel_repositories }}"
+
+- name: 'Check if the local fork remotes exist'
+  shell: "git remote | grep ^{{ katello_devel_github_username }}$"
+  args:
+    chdir: ~/{{ item.split('/')[1] }}
+  ignore_errors: true
+  changed_when: false
+  with_items: "{{ smart_proxy_devel_repositories }}"
+  register: local_smart_proxy_fork_remotes_exist
+
+- name: 'Check the GitHub fork repos exist for missing local fork remotes'
+  shell: "git ls-remote --exit-code -h https://:@github.com/{{ katello_devel_github_username }}/{{ item.item.split('/')[1] }}"
+  args:
+    chdir: ~/{{ item.item.split('/')[1] }}
+  ignore_errors: true
+  changed_when: false
+  with_items: "{{ local_smart_proxy_fork_remotes_exist.results }}"
+  when: item.rc != 0
+  register: github_smart_proxy_forks_exist
+
+- name: 'Add local fork remotes to cloned repositories'
+  command: "git remote add {{ katello_devel_github_username }} git@github.com:{{ katello_devel_github_username }}/{{ item.item.item.split('/')[1] }}.git"
+  when:
+    - ('skipped' not in item)
+    - item.rc == 0
+  args:
+    chdir: ~/{{ item.item.item.split('/')[1] }}
+  ignore_errors: true
+  with_items: "{{ github_smart_proxy_forks_exist.results }}"
+
+- name: 'Add local gems to bundler.d/plugin.local.rb'
+  blockinfile:
+    dest: ~/smart-proxy/bundler.d/{{ item.split('/')[1] }}.local.rb
+    create: true
+    block: |
+      path '../../' do
+        gem '{{ item.split('/')[1] }}'
+      end
+  when: item.split('/')[1] != 'smart-proxy'
+  with_items: "{{ smart_proxy_devel_repositories }}"
+
+- name: 'Use production smart-proxy config file'
+  become: true
+  command: cp /etc/foreman-proxy/settings.yml /home/vagrant/smart-proxy/config/settings.yml
+  args:
+    creates: /home/vagrant/smart-proxy/config/settings.yml
+
+- name: 'Install gems'
+  become: true
+  command: 'bundle install'
+  args:
+    chdir: /home/vagrant/smart-proxy
+    creates: /home/vagrant/smart-proxy/Gemfile.lock
+
+- name: 'Stop foreman-proxy'
+  become: true
+  service:
+    name: foreman-proxy
+    state: stopped
+    enabled: true
+
+- name: 'Make foreman-proxy.service use binary from checkout'
+  become: true
+  replace:
+    path: /usr/lib/systemd/system/foreman-proxy.service
+    regexp: 'ExecStart=/usr/share/foreman-proxy/bin/smart-proxy'
+    replace: 'ExecStart=bundle exec /home/vagrant/smart-proxy/bin/smart-proxy'
+
+- name: 'Provide Gemfile env variable for the service'
+  become: true
+  lineinfile:
+    path: /usr/lib/systemd/system/foreman-proxy.service
+    line: 'Environment=BUNDLE_GEMFILE=/home/vagrant/smart-proxy/Gemfile'
+    insertafter: 'EnvironmentFile=-/etc/sysconfig/foreman-proxy'
+
+- name: 'Provide Gemfile env variable for the service'
+  become: true
+  lineinfile:
+    path: /usr/lib/systemd/system/foreman-proxy.service
+    line: 'Environment="BUNDLE_GEMFILE=/home/vagrant/smart-proxy/Gemfile"'
+    insertafter: 'EnvironmentFile=-/etc/sysconfig/foreman-proxy'
+
+- name: 'Change user for foreman-proxy service'
+  become: true
+  replace:
+    path: /usr/lib/systemd/system/foreman-proxy.service
+    regexp: 'User=foreman-proxy'
+    replace: 'User=root'
+
+- name: 'Reload systemd'
+  become: true
+  command: systemctl daemon-reload
+
+- name: 'Start foreman-proxy'
+  become: true
+  service:
+    name: foreman-proxy
+    state: started
+    enabled: true

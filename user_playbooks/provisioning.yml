@@ -1,0 +1,26 @@
+- hosts: all
+  become: true
+  roles:
+    - role: foreman_server_repositories
+      foreman_server_repositories_katello: true
+      foreman_server_repositories_foreman_client: true
+      foreman_server_repositories_epel: true
+      foreman_server_repositories_puppet: true
+      foreman_server_repositories_foreman: true
+      foreman_server_repositories_katello_client: true
+      foreman_puppet_repositories_version: 8
+    - role: custom_foreman_installer_devel_scenario
+    - role: custom_foreman_installer
+      foreman_installer_scenario: katello-devel
+      foreman_installer_additional_packages:
+        - foreman-installer-katello
+      foreman_installer_disable_system_checks: true
+      foreman_installer_options_internal_use_only:
+        - "{{ '--katello-devel-github-username=' + katello_devel_github_username if katello_devel_github_username is defined else '' }}"
+    - role: custom_libvirt
+    - role: hammer_devel_extra
+      become: false
+    - role: smart_proxy_devel
+      become: false
+    - role: custom_katello_provisioning
+      become: false

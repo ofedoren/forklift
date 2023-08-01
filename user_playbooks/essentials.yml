@@ -1,0 +1,9 @@
+---
+- hosts: all
+  become: false
+  roles:
+    - role: etc_hosts
+      become: true
+    - role: epel_repositories
+      become: true
+    - role: essentials
