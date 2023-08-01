@@ -1,0 +1,49 @@
+---
+- name: 'Configure hammer_cli_foreman_bootdisk'
+  command: cp ~/hammer_cli_foreman_bootdisk/config/foreman_bootdisk.yml ~/.hammer/cli.modules.d/
+  args:
+    creates: ~/.hammer/cli.modules.d/foreman_bootdisk.yml
+
+- name: 'Configure hammer_cli_foreman_openscap'
+  command: cp ~/hammer_cli_foreman_openscap/config/foreman_openscap.yml ~/.hammer/cli.modules.d/
+  args:
+    creates: ~/.hammer/cli.modules.d/foreman_openscap.yml
+
+- name: 'Enable hammer-cli-foreman-discovery'
+  command: cp ~/hammer-cli-foreman-discovery/config/foreman_discovery.yml ~/.hammer/cli.modules.d/
+  args:
+    creates: ~/.hammer/cli.modules.d/foreman_discovery.yml
+
+- name: 'Enable hammer-cli-foreman-tasks'
+  command: cp ~/hammer-cli-foreman-tasks/config/foreman_tasks.yml ~/.hammer/cli.modules.d/
+  args:
+    creates: ~/.hammer/cli.modules.d/foreman_tasks.yml
+
+- name: 'Enable hammer-cli-foreman-templates'
+  command: cp ~/hammer-cli-foreman-templates/config/foreman_templates.yml ~/.hammer/cli.modules.d/
+  args:
+    creates: ~/.hammer/cli.modules.d/foreman_templates.yml
+
+- name: 'Enable hammer-cli-foreman-ansible'
+  command: cp ~/hammer-cli-foreman-ansible/config/foreman_ansible.yml ~/.hammer/cli.modules.d/
+  args:
+    creates: ~/.hammer/cli.modules.d/foreman_ansible.yml
+
+- name: 'Enable hammer-cli-foreman-webhooks'
+  command: cp ~/hammer-cli-foreman-webhooks/config/foreman_webhooks.yml ~/.hammer/cli.modules.d/
+  args:
+    creates: ~/.hammer/cli.modules.d/foreman_webhooks.yml
+
+- name: 'Enable hammer-cli-foreman-puppet'
+  command: cp ~/hammer-cli-foreman-puppet/config/foreman_puppet.yml ~/.hammer/cli.modules.d/
+  args:
+    creates: ~/.hammer/cli.modules.d/foreman_puppet.yml
+
+- name: 'Enable hammer-cli-foreman-google'
+  command: cp ~/hammer-cli-foreman-google/config/foreman_google.yml ~/.hammer/cli.modules.d/
+  args:
+    creates: ~/.hammer/cli.modules.d/foreman_google.yml
+
+- name: 'Remove concurrent-ruby 1.3.4'
+  become: true
+  command: gem uninstall -i /usr/share/gems concurrent-ruby -v 1.3.4

@@ -1,0 +1,6 @@
+---
+- hosts: all
+  become: true
+  roles:
+    - role: smart_proxy_devel
+      become: false

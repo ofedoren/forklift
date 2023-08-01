@@ -1,0 +1,38 @@
+---
+certs:
+  group: {{ foreman_installer_devel_scenario_group | default(foreman_installer_devel_scenario_user) }}
+  deploy: true
+  generate: true
+katello_devel:
+  deployment_dir: /home/{{ foreman_installer_devel_scenario_user }}
+  user: {{ foreman_installer_devel_scenario_user }}
+foreman_proxy_content:
+  enable_katello_agent: true
+  proxy_pulp_yum_to_pulpcore: true
+  puppet: false
+foreman_proxy:
+  http: true
+  ssl_port: '9090'
+  ssl_ca: /etc/foreman-proxy/ssl_ca.pem
+  ssl_cert: /etc/foreman-proxy/ssl_cert.pem
+  ssl_key: /etc/foreman-proxy/ssl_key.pem
+  foreman_ssl_ca: /etc/foreman-proxy/foreman_ssl_ca.pem
+  foreman_ssl_cert: /etc/foreman-proxy/foreman_ssl_cert.pem
+  foreman_ssl_key: /etc/foreman-proxy/foreman_ssl_key.pem
+  manage_puppet_group: false
+  puppet: false
+  puppetca: false
+puppet: false
+foreman_proxy::plugin::ansible: false
+foreman_proxy::plugin::dhcp::infoblox: false
+foreman_proxy::plugin::dhcp::remote_isc: false
+foreman_proxy::plugin::discovery: false
+foreman_proxy::plugin::dns::infoblox: false
+foreman_proxy::plugin::dns::powerdns: false
+foreman_proxy::plugin::dynflow: true
+foreman_proxy::plugin::monitoring: false
+foreman_proxy::plugin::omaha: false
+foreman_proxy::plugin::openscap: false
+foreman_proxy::plugin::remote_execution::script: true
+foreman_proxy::plugin::salt: false
+foreman_proxy::plugin::shellhooks: false

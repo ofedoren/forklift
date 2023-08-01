@@ -1,0 +1,67 @@
+---
+- name: 'Setup CentOS provisioning'
+  import_tasks: configure_centos.yml
+
+- name: 'Setup Fedora 40 provisioning'
+  import_tasks: configure_fedora_40.yml
+
+- name: 'Setup Debian 12.6 provisioning'
+  import_tasks: configure_debian_12_6.yml
+
+- name: 'Setup Ubuntu 24.04 provisioning'
+  import_tasks: configure_ubuntu_24_04.yml
+
+# TODO verify - should not be needed, DNS should work just fine
+- name: 'set unattended_url'
+  shell: >
+    {{ foreman_provisioning_hammer }} settings set --name unattended_url --value 'http://{{ foreman_provisioning_ip_address }}'
+
+- name: 'find hostgroup Base'
+  shell: >
+    {{ foreman_provisioning_hammer }} hostgroup info --name 'Base'
+  register: foreman_provisioning_hostgroup_base
+  ignore_errors: True
+
+- name: 'prepare compute resource option'
+  set_fact:
+    foreman_provisioning_compute_resource_option: "{{ '--compute-resource libvirt' if foreman_provisioning_foreman_version == 'nightly' else '' }}"
+
+- name: 'prepare compute profile option'
+  set_fact:
+    foreman_provisioning_compute_profile_option: "{{ '--compute-profile libvirt-profile' if 'Error' not in foreman_provisioning_compute_profile_cmd.stderr else '' }}"
+
+# TODO compute-profile can't be specified by name until http://projects.theforeman.org/issues/21580/ so we hardcode 1
+- name: 'create hostgroup Base'
+  shell: >
+    {{ foreman_provisioning_hammer }} hostgroup create
+    --name 'Base'
+    --architecture x86_64
+    --domain {{ foreman_provisioning_domain }}
+    --puppet-environment-id 1
+    --puppet-ca-proxy-id {{ foreman_provisioning_smart_proxy.Id }}
+    --puppet-proxy-id {{ foreman_provisioning_smart_proxy.Id }}
+    --subnet '{{ foreman_provisioning_network }}/24'
+    {{ foreman_provisioning_compute_profile_option }}
+    {{ foreman_provisioning_compute_resource_option }}
+    --root-password changeme
+    --pxe-loader "PXELinux BIOS"
+    --organization '{{ foreman_provisioning_organization }}'
+    {{ foreman_provisioning_hammer_taxonomy_params }}
+  when: foreman_provisioning_hostgroup_base.stderr.find('not found') != -1
+
+- name: 'find hostgroup CentOS 9'
+  shell: >
+    {{ foreman_provisioning_hammer }} hostgroup info --name 'CentOS 9 Mirror'
+  register: foreman_provisioning_hostgroup_centos_mirror
+  ignore_errors: True
+
+- name: 'create hostgroup CentOS 9 Mirror'
+  shell: >
+    {{ foreman_provisioning_hammer }} hostgroup create
+    --name 'CentOS 9 Mirror'
+    --operatingsystem 'CentOS Stream 9'
+    --medium '{{ centos_medium_name }}'
+    --partition-table 'Kickstart default'
+    --parent 'Base'
+    {{ foreman_provisioning_hammer_taxonomy_params }}
+  when: foreman_provisioning_hostgroup_centos_mirror.stderr.find('not found') != -1

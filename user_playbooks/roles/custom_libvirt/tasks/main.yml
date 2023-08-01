@@ -1,0 +1,42 @@
+---
+- name: 'Set OS version dependent variables'
+  include_vars: "el{{ ansible_distribution_major_version }}.yml"
+
+- name: 'install the virtualization hypervisor package group'
+  yum:
+    name: "@Virtualization Hypervisor"
+    state: present
+
+- name: 'install the virtualization tools package group'
+  yum:
+    name: "@Virtualization Tools"
+    state: present
+
+- name: 'install the libvirt-python support'
+  yum:
+    name: "{{ libvirt_python_deps }}"
+    state: present
+
+- name: 'disable libvirt authentication'
+  lineinfile:
+    dest: /etc/libvirt/libvirtd.conf
+    line: 'auth_unix_rw = "none"'
+
+- include_tasks: 'nested.yml'
+  when: libvirt_nested
+
+- name: 'restart libvirt'
+  service:
+    name: libvirtd
+    state: restarted
+
+- include_tasks: 'tftp.yml'
+  when: libvirt_tftp
+
+- name: 'Add vagrant user to libvirt group'
+  user:
+    name: vagrant
+    groups: libvirt
+    append: yes
+    state: present
+    shell: /bin/bash

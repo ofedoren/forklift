@@ -1,0 +1,5 @@
+---
+dependencies:
+  - role: hammer_credentials
+  - role: custom_foreman_provisioning_infrastructure
+    become: false

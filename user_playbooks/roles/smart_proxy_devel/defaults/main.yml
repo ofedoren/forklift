@@ -1,0 +1,5 @@
+---
+foreman_ansible_roles:
+  - geerlingguy.ruby
+  - geerlingguy.ntp
+  - geerlingguy.apache

@@ -1,0 +1,226 @@
+- name: 'Enable CRB'
+  become: true
+  command: dnf config-manager --set-enabled crb
+
+- name: 'Update the system'
+  become: true
+  dnf:
+    name: '*'
+    state: latest
+  ignore_errors: true
+
+- name: 'Install the development tools package group'
+  become: true
+  yum:
+    name: "@Development Tools"
+    state: present
+
+- name: 'Install the virtualization tools package group'
+  become: true
+  yum:
+    name: "@Virtualization Tools"
+    state: present
+
+- name: 'Install langs and deps'
+  become: true
+  package:
+    name:
+      - 'vim'
+      - 'git'
+      - 'ruby-devel'
+      - 'python3-devel'
+      - 'libyaml-devel'
+    state: installed
+
+- name: 'Install websockify'
+  become: true
+  command: pip3 install websockify
+
+- name: 'Install rexml gem'
+  become: true
+  command: gem install rexml
+
+- name: 'Install rexml gem'
+  command: gem install rexml
+
+- name: 'etc hosts'
+  become: true
+  lineinfile:
+    dest: /etc/hosts
+    regexp: "127.0.1.1 .*"
+    state: absent
+
+- name: 'add hostname to etc hosts'
+  become: true
+  lineinfile:
+    dest: /etc/hosts
+    line: "{{ ansible_default_ipv4.address }} {{ foreman_machine_hostname }}"
+
+- name: 'Pretty terminal'
+  blockinfile:
+    path: ~/.bashrc
+    block: |
+      git_branch () {
+        git rev-parse --abbrev-ref HEAD 2>/dev/null
+      }
+      export PS1='\[\e[38;5;81m\]\w\n\[\e[38;5;202m\]$(git branch 2>/dev/null | grep '"'"'*'"'"' | colrm 1 2)\n\[\e[38;5;213m\]\u@\H \[\e[38;5;202m\]> \[\e[0m\]'
+
+- name: 'Alias hm'
+  lineinfile:
+    path: ~/.bashrc
+    line: "alias hm='BUNDLE_GEMFILE=/home/vagrant/hammer-cli/Gemfile bundle exec hammer'"
+    insertafter: alias.*
+
+- name: 'Alias be'
+  lineinfile:
+    path: ~/.bashrc
+    line: "alias be='bundle exec'"
+    insertafter: alias.*
+
+- name: 'Alias bers'
+  lineinfile:
+    path: ~/.bashrc
+    line: "alias bers='bundle exec rails server'"
+    insertafter: alias.*
+
+- name: 'Alias befs'
+  lineinfile:
+    path: ~/.bashrc
+    line: "alias befs='bundle exec foreman start'"
+    insertafter: alias.*
+
+- name: 'Alias bercs'
+  lineinfile:
+    path: ~/.bashrc
+    line: "alias bercs='bundle exec rails console --sandbox'"
+    insertafter: alias.*
+
+- name: 'Alias befsp'
+  lineinfile:
+    path: ~/.bashrc
+    line: "alias befsp='RAILS_SERVE_STATIC_FILES=true RAILS_ENV=production NODE_ENV=production bundle exec foreman start'"
+    insertafter: alias.*
+
+- name: 'GH API token'
+  lineinfile:
+    path: ~/.github_api_token
+    line: {{ github_api_token }}
+    create: yes
+  when: github_api_token is defined
+
+- name: 'Transifex config'
+  blockinfile:
+    dest: ~/.transifexrc
+    create: true
+    block: |
+      [https://app.transifex.com]
+      api_hostname = https://api.transifex.com
+      hostname = https://app.transifex.com
+      password = {{ transifex_api_token }}
+      username = api
+      token = {{ transifex_api_token }}
+      rest_hostname = https://rest.api.transifex.com
+  when: transifex_api_token is defined
+
+# Git configurations
+- name: 'Config git name'
+  git_config:
+    name: user.name
+    scope: global
+    value: {{ git_name }}
+
+- name: 'Config git email'
+  git_config:
+    name: user.email
+    scope: global
+    value: {{ git_email }}
+
+- name: 'Config git commit alias'
+  git_config:
+    name: alias.ci
+    scope: global
+    value: commit
+
+- name: 'Config git status alias'
+  git_config:
+    name: alias.st
+    scope: global
+    value: status
+
+- name: 'Config git checkout alias'
+  git_config:
+    name: alias.co
+    scope: global
+    value: checkout
+
+- name: 'Config git pull ff'
+  git_config:
+    name: pull.ff
+    scope: global
+    value: true
+
+- name: 'Always push to github over ssh'
+  become: true
+  git_config:
+    name: 'url."git@github.com:".pushInsteadOf'
+    value: 'https://github.com/'
+    scope: system
+
+- name: 'Copy local private SSH key to guest for vagrant user'
+  become: true
+  copy:
+    src: /home/{{ local_username }}/.ssh/id_ed25519
+    dest: /home/vagrant/.ssh/id_ed25519
+    owner: vagrant
+    group: vagrant
+    mode: 0600
+
+- name: 'Copy local public SSH key to guest for vagrant user'
+  become: true
+  copy:
+    src: /home/{{ local_username }}/.ssh/id_ed25519.pub
+    dest: /home/vagrant/.ssh/id_ed25519.pub
+    owner: vagrant
+    group: vagrant
+    mode: 0644
+
+- name: 'Copy local private SSH key to guest for root user'
+  become: true
+  copy:
+    src: /home/{{ local_username }}/.ssh/id_ed25519
+    dest: ~/.ssh/id_ed25519
+    owner: root
+    group: root
+    mode: 0600
+
+- name: 'Copy local public SSH key to guest for root user'
+  become: true
+  copy:
+    src: /home/{{ local_username }}/.ssh/id_ed25519.pub
+    dest: ~/.ssh/id_ed25519.pub
+    owner: root
+    group: root
+    mode: 0644
+
+- name: 'Start ssh-agent and add the private key'
+  become: true
+  shell: |
+    eval $(ssh-agent)
+    ssh-add ~/.ssh/id_ed25519
+
+- name: Ensure github.com is a known host
+  become: true
+  lineinfile:
+    dest: /root/.ssh/known_hosts
+    create: yes
+    state: present
+    line: "{{ lookup('pipe', 'ssh-keyscan -t ed25519 github.com') }}"
+    regexp: "^github\\.com"
+
+- name: Ensure github.com is a known host
+  lineinfile:
+    dest: /home/vagrant/.ssh/known_hosts
+    create: yes
+    state: present
+    line: "{{ lookup('pipe', 'ssh-keyscan -t ed25519 github.com') }}"
+    regexp: "^github\\.com"

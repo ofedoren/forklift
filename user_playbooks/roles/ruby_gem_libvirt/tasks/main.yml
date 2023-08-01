@@ -1,0 +1,14 @@
+---
+- gem:
+    name: ruby-libvirt
+    user_install: yes
+    state: latest
+
+- gem:
+    name: ruby-libvirt
+    user_install: no
+    state: latest
+
+- name: 'Install ruby-libvirt'
+  become_user: root
+  command: bash -lc "gem install ruby-libvirt"
