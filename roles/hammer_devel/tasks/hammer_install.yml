@@ -62,14 +62,7 @@
     state: present
 
 - name: 'Install gems'
-  become: true
-  command: 'bundle install'
-  args:
-    chdir: /home/vagrant/hammer-cli
-    creates: /home/vagrant/hammer-cli/Gemfile.lock
-
-- name: 'Install gems'
   bundler:
     chdir: '~/hammer-cli'
     state: present
-    gem_path: '~/hammer-cli-foreman/.vendor'
+    gem_path: '~/hammer-cli/.vendor'
