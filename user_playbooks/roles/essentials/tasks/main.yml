@@ -110,7 +110,7 @@
 - name: 'Alias ksn'
   lineinfile:
     path: ~/.bashrc
-    line: "alias ksn='sudo ps -aux | grep spring | cut -d' ' -f5 | head -n 1 | xargs kill -9'"
+    line: alias ksn="sudo ps -aux | grep spring | cut -d' ' -f5 | head -n 1 | xargs kill -9"
     insertafter: alias.*
 
 - name: 'GH API token'
