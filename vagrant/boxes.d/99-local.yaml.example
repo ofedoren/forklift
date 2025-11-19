@@ -3,12 +3,26 @@
 # - change <CHANGEME> accordingly
 # - have locally generated SSH keys in ed25519 format
 # - have that key added to your GitHub account
+# Additional notes:
+# - This VM will also have some Git aliases:
+#   - 'git co' for 'git checkout'
+#   - 'git ci' for 'git commit'
+#   - 'git st' for 'git status'
+# - This VM will also have some Bash aliases:
+#   - 'be' for 'bundle exec'
+#   - 'hm' for 'BUNDLE_GEMFILE=/home/vagrant/hammer-cli/Gemfile bundle exec hammer'
+#   - 'bers' for 'bundle exec rails server'
+#   - 'befs' for 'bundle exec foreman start'
+#   - 'bercs' for 'bundle exec rails console --sandbox'
+#   - 'befsp' for 'RAILS_SERVE_STATIC_FILES=true RAILS_ENV=production NODE_ENV=production bundle exec foreman start'
+#   - 'berac' for 'bundle exec rake assets:clobber'
+#   - 'ksn' for 'sudo ps -aux | grep spring | cut -d' ' -f5 | head -n 1 | xargs kill -9' (to kill spring processes)
 solar:
   primary: true
   box: centos9-stream
-  memory: 20480
-  disk_size: 150
-  cpus: 4
+  memory: 35840 # CHANGEME according to your system capabilities
+  disk_size: 250 # CHANGEME according to your system capabilities
+  cpus: 8 # CHANGEME according to your system capabilities
   cpu_mode: host-passthrough
   hostname: foreman.solar-CHANGEME.com # Whatever, but I'd suggest username, example: ofedoren
   domain: solar-CHANGEME.com # Whatever, but I'd suggest username, example: ofedoren
@@ -26,8 +40,8 @@ solar:
       local_username: CHANGEME # Used for SSH key copying from local machine into virtual machine, must be your current $USER
       git_name: 'CHANGEME CHANGEME' # Used to configure git in the virtual machine, example: Oleh Fedorenko
       git_email: 'CHANGEME' # Used to configure git in the virtual machine, example: ofedoren@redhat.com
-      #github_api_token: "CHANGEME" # Only if you have a GitHub API token and want to use it
-      #transifex_api_token: "CHANGEME" # Only if you have a Transifex API token and want to use it
+      # github_api_token_path: "CHANGEME" # Only if you have a GitHub API token and want to use it, e.g. ~/.github_api_token, will be put into ~/.github_api_token in the VM
+      # transifex_api_token_path: "CHANGEME" # Only if you have a Transifex API token and want to use it, e.g. ~/.transifex_api_token, will be put into ~/.transifexrc in the VM
       katello_provisioning_sync_repos: false
       foreman_repositories_environment: staging
       katello_repositories_environment: staging
@@ -87,7 +101,7 @@ solar:
         - "--tuning development"
         - "--foreman-proxy-content-enable-ostree=true"
         - "--katello-devel-modulestream-nodejs=18"
-        # - "--katello-devel-extra-plugins theforeman/foreman_remote_execution"
+        # - "--katello-devel-extra-plugins theforeman/foreman_remote_execution" # Should be already enabled
         - "--katello-devel-extra-plugins theforeman/foreman_ansible"
         - "--katello-devel-extra-plugins theforeman/foreman_templates"
         - "--katello-devel-extra-plugins theforeman/foreman_openscap"

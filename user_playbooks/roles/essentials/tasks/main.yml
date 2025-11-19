@@ -101,12 +101,26 @@
     line: "alias befsp='RAILS_SERVE_STATIC_FILES=true RAILS_ENV=production NODE_ENV=production bundle exec foreman start'"
     insertafter: alias.*
 
-- name: 'GH API token'
+- name: 'Alias berac'
   lineinfile:
-    path: ~/.github_api_token
-    line: "{{ github_api_token }}"
-    create: yes
-  when: github_api_token is defined
+    path: ~/.bashrc
+    line: "alias berac='bundle exec rake assets:clobber'"
+    insertafter: alias.*
+
+- name: 'Alias ksn'
+  lineinfile:
+    path: ~/.bashrc
+    line: "alias ksn='sudo ps -aux | grep spring | cut -d' ' -f5 | head -n 1 | xargs kill -9'"
+    insertafter: alias.*
+
+- name: 'GH API token'
+  copy:
+    src: "{{ github_api_token_path }}"
+    dest: ~/.github_api_token
+    owner: vagrant
+    group: vagrant
+    mode: u=rw,g=r,o=r
+  when: github_api_token_path is defined
 
 - name: 'Transifex config'
   blockinfile:
@@ -116,11 +130,11 @@
       [https://app.transifex.com]
       api_hostname = https://api.transifex.com
       hostname = https://app.transifex.com
-      password = {{ transifex_api_token }}
+      password = {{ lookup('file', transifex_api_token_path) }}
       username = api
-      token = {{ transifex_api_token }}
+      token = {{ lookup('file', transifex_api_token_path) }}
       rest_hostname = https://rest.api.transifex.com
-  when: transifex_api_token is defined
+  when: transifex_api_token_path is defined
 
 # Git configurations
 - name: 'Config git name'
