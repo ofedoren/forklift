@@ -104,7 +104,7 @@
 - name: 'GH API token'
   lineinfile:
     path: ~/.github_api_token
-    line: {{ github_api_token }}
+    line: "{{ github_api_token }}"
     create: yes
   when: github_api_token is defined
 
@@ -127,13 +127,13 @@
   git_config:
     name: user.name
     scope: global
-    value: {{ git_name }}
+    value: "{{ git_name }}"
 
 - name: 'Config git email'
   git_config:
     name: user.email
     scope: global
-    value: {{ git_email }}
+    value: "{{ git_email }}"
 
 - name: 'Config git commit alias'
   git_config:
