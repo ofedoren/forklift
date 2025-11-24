@@ -1,0 +1,6 @@
+- hosts: all
+  become: true
+  roles:
+    - role: custom_libvirt
+    - role: custom_katello_provisioning
+      become: false

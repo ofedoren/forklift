@@ -17,10 +17,7 @@
       foreman_installer_disable_system_checks: true
       foreman_installer_options_internal_use_only:
         - "{{ '--katello-devel-github-username=' + katello_devel_github_username if katello_devel_github_username is defined else '' }}"
-    - role: custom_libvirt
     - role: hammer_devel_extra
       become: false
     - role: smart_proxy_devel
-      become: false
-    - role: custom_katello_provisioning
       become: false

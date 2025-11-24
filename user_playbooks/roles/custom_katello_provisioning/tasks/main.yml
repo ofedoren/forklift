@@ -392,8 +392,10 @@
   shell: >
     cat /home/vagrant/foreman/tmp/pids/server.pid
   register: foreman_pid
+  ignore_errors: true
 
 - name: 'kill Foreman process'
   become: true
   shell: >
     kill -9 {{ foreman_pid.stdout }}
+  ignore_errors: true
